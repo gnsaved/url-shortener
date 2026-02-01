@@ -1,20 +1,32 @@
+# URL Shortener - Works in Root OR Subdirectory
+# Auto-detects location and adjusts accordingly
+
 RewriteEngine On
 
+# Auto-detect base directory
+# This works whether you're at:
+# - https://domain.com/ (root)
+# - https://domain.com/url-shortener/ (subfolder)
+# - https://subdomain.domain.com/ (subdomain)
+RewriteBase /url-shortener/
+
+# Important: Change the line above based on your installation:
+# - If in ROOT: RewriteBase /
+# - If in subfolder: RewriteBase /url-shortener/
+# - If in different subfolder: RewriteBase /your-folder-name/
+
+# Don't rewrite if file exists
+RewriteCond %{REQUEST_FILENAME} -f
+RewriteRule ^ - [L]
+
+# Don't rewrite if directory exists
+RewriteCond %{REQUEST_FILENAME} -d
+RewriteRule ^ - [L]
+
 # Redirect short codes to r.php
-RewriteCond %{REQUEST_FILENAME} !-f
-RewriteCond %{REQUEST_FILENAME} !-d
-RewriteRule ^([a-zA-Z0-9_-]+)$ r.php?code=$1 [L,QSA]
+RewriteRule ^([a-zA-Z0-9_-]+)/?$ r.php?code=$1 [L,QSA]
 
-# Prevent direct access to data directory
-<IfModule mod_authz_core.c>
-    <Directory "data">
-        Require all denied
-    </Directory>
-</IfModule>
-
-# Security headers
-<IfModule mod_headers.c>
-    Header set X-Content-Type-Options "nosniff"
-    Header set X-Frame-Options "SAMEORIGIN"
-    Header set X-XSS-Protection "1; mode=block"
-</IfModule>
+# Protect data directory
+<Files "urls.json">
+    Require all denied
+</Files>
