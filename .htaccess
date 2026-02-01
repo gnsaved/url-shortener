@@ -1,0 +1,20 @@
+RewriteEngine On
+
+# Redirect short codes to r.php
+RewriteCond %{REQUEST_FILENAME} !-f
+RewriteCond %{REQUEST_FILENAME} !-d
+RewriteRule ^([a-zA-Z0-9_-]+)$ r.php?code=$1 [L,QSA]
+
+# Prevent direct access to data directory
+<IfModule mod_authz_core.c>
+    <Directory "data">
+        Require all denied
+    </Directory>
+</IfModule>
+
+# Security headers
+<IfModule mod_headers.c>
+    Header set X-Content-Type-Options "nosniff"
+    Header set X-Frame-Options "SAMEORIGIN"
+    Header set X-XSS-Protection "1; mode=block"
+</IfModule>
