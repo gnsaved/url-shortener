@@ -64,10 +64,28 @@ if (!empty($customCode)) {
     }
 }
 
-// Get domain (change this to your actual domain)
+// AUTO-DETECT BASE URL (works in any folder/subdomain!)
 $protocol = isset($_SERVER['HTTPS']) && $_SERVER['HTTPS'] === 'on' ? 'https' : 'http';
 $domain = $_SERVER['HTTP_HOST'];
-$shortUrl = $protocol . '://' . $domain . '/r.php?code=' . $code;
+
+// Get the directory where the script is located
+$scriptDir = dirname($_SERVER['SCRIPT_NAME']);
+$scriptDir = ($scriptDir === '/' || $scriptDir === '\\') ? '' : $scriptDir;
+
+// Build base URL automatically
+$baseUrl = $protocol . '://' . $domain . $scriptDir;
+
+// Create short URL - works with or without .htaccess
+// First, try to detect if .htaccess is working
+$htaccessWorks = file_exists('.htaccess');
+
+if ($htaccessWorks) {
+    // Use clean URLs if .htaccess exists
+    $shortUrl = $baseUrl . '/' . $code;
+} else {
+    // Use r.php?code= format as fallback
+    $shortUrl = $baseUrl . '/r.php?code=' . $code;
+}
 
 // Create new URL entry
 $newUrl = [
@@ -75,6 +93,7 @@ $newUrl = [
     'code' => $code,
     'long_url' => $longUrl,
     'short_url' => $shortUrl,
+    'base_url' => $baseUrl, // Store base URL for reference
     'clicks' => 0,
     'created_at' => date('Y-m-d H:i:s'),
     'expires_at' => null,
