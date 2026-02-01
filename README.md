@@ -116,10 +116,10 @@ url-shortener/
 │   ├── style.css         # Optimized styling
 │   └── script.js         # JavaScript interactions
 ├── screenshots/          # Application screenshots
-│   ├── dashboard.png
-│   ├── login.png
-│   ├── create-url.png
-│   └── analytics.png
+│   ├── Add Url.png
+│   ├── Dashboard.png
+│   ├── Delete Shorturl.png
+│   └── Edit Shorturl.png
 └── README.md             # This file
 ```
 
